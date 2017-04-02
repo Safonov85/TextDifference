@@ -1,9 +1,0 @@
-c:\users\mindator\documents\visual studio 2015\Projects\TextDifference\TextDifference\bin\Debug\TextDifference.exe.config
-c:\users\mindator\documents\visual studio 2015\Projects\TextDifference\TextDifference\bin\Debug\TextDifference.exe
-c:\users\mindator\documents\visual studio 2015\Projects\TextDifference\TextDifference\bin\Debug\TextDifference.pdb
-c:\users\mindator\documents\visual studio 2015\Projects\TextDifference\TextDifference\obj\Debug\TextDifference.csprojResolveAssemblyReference.cache
-c:\users\mindator\documents\visual studio 2015\Projects\TextDifference\TextDifference\obj\Debug\TextDifference.Properties.Resources.resources
-c:\users\mindator\documents\visual studio 2015\Projects\TextDifference\TextDifference\obj\Debug\TextDifference.csproj.GenerateResource.Cache
-c:\users\mindator\documents\visual studio 2015\Projects\TextDifference\TextDifference\obj\Debug\TextDifference.exe
-c:\users\mindator\documents\visual studio 2015\Projects\TextDifference\TextDifference\obj\Debug\TextDifference.pdb
-c:\users\mindator\documents\visual studio 2015\Projects\TextDifference\TextDifference\obj\Debug\TextDifference.MainForm.resources
