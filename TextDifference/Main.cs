@@ -103,6 +103,7 @@ namespace TextDifference
             }
             List<string> listFirstText = new List<string>();
             List<string> listSecondText = new List<string>();
+            List<int> listRemovedWords = new List<int>();
 
             // Add words to First Text list
             string[] wordsText1 = firstText.Split(' ');
@@ -118,6 +119,31 @@ namespace TextDifference
                 listSecondText.Add(word);
             }
 
+            int num = 0;
+
+            while(num < 1)
+            {
+                num++;
+                int index = 0;
+                foreach(string word in listFirstText)
+                {
+                    if(word == listSecondText[index])
+                    {
+                        index++;
+                        continue;
+                    }
+                    else
+                    {
+                        listRemovedWords.Add(index);
+                        listSecondText.RemoveAt(index);
+                        num = 0;
+                        break;
+                    }
+                }
+            }
+
+
+
             //foreach(string wurd in listFirstText)
             //{
             //    Text1RichTextBox.Text += Environment.NewLine + wurd;
@@ -126,10 +152,10 @@ namespace TextDifference
 
         void HighlightText()
         {
-            if (String.IsNullOrEmpty(Text1RichTextBox.Text))
-            {
-                return;
-            }
+            //if (String.IsNullOrEmpty(Text1RichTextBox.Text))
+            //{
+            //    return;
+            //}
             int start = 0;
             int end = Text1RichTextBox.Text.LastIndexOf("hoppade");
 
