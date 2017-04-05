@@ -39,6 +39,7 @@ namespace TextDifference
         private void LoadText2Button_Click(object sender, EventArgs e)
         {
             SelectFileFromDialog("2");
+            HighlightText();
         }
 
         void SelectFileFromDialog(string richTextBox)
@@ -150,26 +151,44 @@ namespace TextDifference
             //}
         }
 
+        int CountSpaceChars(string value)
+        {
+            int result = 0;
+            foreach (char c in value)
+            {
+                if (char.IsWhiteSpace(c))
+                {
+                    result++;
+                }
+            }
+            return result;
+        }
+
         void HighlightText()
         {
             //if (String.IsNullOrEmpty(Text1RichTextBox.Text))
             //{
             //    return;
             //}
-            int start = 0;
-            int end = Text1RichTextBox.Text.LastIndexOf("hoppade");
+            //int start = 0;
+            //int end = Text1RichTextBox.Text.LastIndexOf("hoppade");
 
             Text1RichTextBox.SelectAll();
             Text1RichTextBox.SelectionBackColor = Color.Transparent;
 
-            //while (start < end)
-            //{
-                Text1RichTextBox.Find("hoppade", start, Text1RichTextBox.TextLength, RichTextBoxFinds.MatchCase);
 
-                Text1RichTextBox.SelectionBackColor = Color.Yellow;
+            //Text1RichTextBox.Find("hoppade", 0, Text1RichTextBox.TextLength, RichTextBoxFinds.MatchCase);
 
-                start = Text1RichTextBox.Text.IndexOf("hoppade", start) + 1;
-            //}
+            //Text1RichTextBox.Select(5, 10);
+            
+            //Text1RichTextBox.SelectionBackColor = Color.Yellow;
+
+            Text1RichTextBox.Select(20, 27 - 20);
+
+            Text1RichTextBox.SelectionBackColor = Color.Yellow;
+
+            //start = Text1RichTextBox.Text.IndexOf("hoppade", start) + 1;
+
         }
 
         
