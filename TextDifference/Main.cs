@@ -14,6 +14,7 @@ namespace TextDifference
     public partial class MainForm : Form
     {
         string firstText, secondText;
+        int selectFirst, selectLast;
 
         public MainForm()
         {
@@ -142,13 +143,15 @@ namespace TextDifference
                     }
                 }
             }
-
-
-
             //foreach(string wurd in listFirstText)
             //{
             //    Text1RichTextBox.Text += Environment.NewLine + wurd;
             //}
+        }
+
+        void MatchString(string text1, string text2)
+        {
+
         }
 
         int CountSpaceChars(string value)
