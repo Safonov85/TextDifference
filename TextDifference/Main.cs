@@ -32,7 +32,6 @@ namespace TextDifference
         private void LoadText1Button_Click(object sender, EventArgs e)
         {
             SelectFileFromDialog("1");
-
             //GetMissingWord();
             //HighlightText();
         }
@@ -40,7 +39,8 @@ namespace TextDifference
         private void LoadText2Button_Click(object sender, EventArgs e)
         {
             SelectFileFromDialog("2");
-            HighlightText();
+            //HighlightText();
+            MatchString(Text1RichTextBox.Text, Text2RichTextBox.Text);
         }
 
         void SelectFileFromDialog(string richTextBox)
@@ -151,7 +151,44 @@ namespace TextDifference
 
         void MatchString(string text1, string text2)
         {
+            char[] textChar1 = text1.ToCharArray();
+            List<char> listFirstText = textChar1.OfType<char>().ToList();
 
+
+            char[] textChar2 = text2.ToCharArray();
+            List<char> listSecondText = textChar2.OfType<char>().ToList();
+
+
+            int count = 0;
+            foreach(char letter in listFirstText)
+            {
+                if(letter != listSecondText[count])
+                {
+                    Text2RichTextBox.Select(count, count);
+
+                    Text2RichTextBox.SelectionBackColor = Color.Yellow;
+
+                    listSecondText.RemoveAt(count);
+                }
+                count++;
+            }
+
+            //int count = 0;
+            //foreach(char array in textChar1)
+            //{
+            //    if(array != textChar2[count])
+            //    {
+            //        //Text1RichTextBox.Text += Environment.NewLine + array.ToString();
+
+            //        Text2RichTextBox.Select(count, count);
+
+            //        Text2RichTextBox.SelectionBackColor = Color.Yellow;
+
+
+            //    }
+
+            //    count++;
+            //}
         }
 
         int CountSpaceChars(string value)
@@ -186,7 +223,7 @@ namespace TextDifference
             
             //Text1RichTextBox.SelectionBackColor = Color.Yellow;
 
-            Text1RichTextBox.Select(20, 27 - 20);
+            Text1RichTextBox.Select(1, 27 - 20);
 
             Text1RichTextBox.SelectionBackColor = Color.Yellow;
 
