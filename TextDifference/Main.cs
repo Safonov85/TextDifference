@@ -14,7 +14,7 @@ namespace TextDifference
     public partial class MainForm : Form
     {
         string firstText, secondText;
-        int selectFirst, selectLast;
+        int? selectFirst, selectLast;
 
         public MainForm()
         {
@@ -40,7 +40,8 @@ namespace TextDifference
         {
             SelectFileFromDialog("2");
             //HighlightText();
-            MatchString(Text1RichTextBox.Text, Text2RichTextBox.Text);
+            //MatchString(Text1RichTextBox.Text, Text2RichTextBox.Text);
+            //Text1RichTextBox.Text += Environment.NewLine + LCSBack(Text1RichTextBox.Text, Text2RichTextBox.Text);
         }
 
         void SelectFileFromDialog(string richTextBox)
@@ -149,6 +150,27 @@ namespace TextDifference
             //}
         }
 
+        public string LCSBack(string text1, string text2)
+        {
+            string aSub = text1.Substring(0, (text1.Length - 1 < 0) ? 0 : text1.Length - 1);
+            string bSub = text2.Substring(0, (text2.Length - 1 < 0) ? 0 : text2.Length - 1);
+
+            if (text1.Length == 0 || text2.Length == 0)
+            {
+                return "";
+            }
+            else if (text1[text1.Length - 1] == text2[text2.Length - 1])
+            {
+                return LCSBack(aSub, bSub) + text1[text1.Length - 1];
+            }
+            else
+            {
+                string x = LCSBack(text1, bSub);
+                string y = LCSBack(aSub, text2);
+                return (x.Length > y.Length) ? x : y;
+            }
+        }
+
         void MatchString(string text1, string text2)
         {
             char[] textChar1 = text1.ToCharArray();
@@ -158,20 +180,33 @@ namespace TextDifference
             char[] textChar2 = text2.ToCharArray();
             List<char> listSecondText = textChar2.OfType<char>().ToList();
 
+            
 
             int count = 0;
             foreach(char letter in listFirstText)
             {
                 if(letter != listSecondText[count])
                 {
-                    Text2RichTextBox.Select(count, count);
+                    //Text2RichTextBox.Select(count, count);
 
-                    Text2RichTextBox.SelectionBackColor = Color.Yellow;
+                    //Text2RichTextBox.SelectionBackColor = Color.Yellow;
 
+                    if(selectFirst == null)
+                    {
+                        selectFirst = count;
+                    }
+                    else
+                    {
+                        selectLast = count;
+                    }
                     listSecondText.RemoveAt(count);
                 }
                 count++;
             }
+
+            Text1RichTextBox.Select((int)selectFirst, (int)selectLast);
+
+            Text1RichTextBox.SelectionBackColor = Color.Yellow;
 
             //int count = 0;
             //foreach(char array in textChar1)
