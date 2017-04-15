@@ -11,10 +11,14 @@ using System.Windows.Forms;
 
 namespace TextDifference
 {
+
     public partial class MainForm : Form
     {
+
+
         string firstText, secondText;
         int? selectFirst, selectLast;
+        int potensNum = 2 * 2 * 2;
 
         public MainForm()
         {
@@ -32,13 +36,14 @@ namespace TextDifference
         private void LoadText1Button_Click(object sender, EventArgs e)
         {
             SelectFileFromDialog("1");
-            //GetMissingWord();
+            GetMissingWord();
             //HighlightText();
         }
 
         private void LoadText2Button_Click(object sender, EventArgs e)
         {
             SelectFileFromDialog("2");
+            GetMissingWord();
             //HighlightText();
             //MatchString(Text1RichTextBox.Text, Text2RichTextBox.Text);
             //Text1RichTextBox.Text += Environment.NewLine + LCSBack(Text1RichTextBox.Text, Text2RichTextBox.Text);
@@ -49,7 +54,7 @@ namespace TextDifference
             Stream myStream = null;
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
-            openFileDialog1.InitialDirectory = "c:\\";
+            openFileDialog1.InitialDirectory = "c:\\Users\\MinDator\\Desktop\\";
             openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
@@ -135,20 +140,22 @@ namespace TextDifference
                         index++;
                         continue;
                     }
-                    else
-                    {
-                        listRemovedWords.Add(index);
-                        listSecondText.RemoveAt(index);
-                        num = 0;
-                        break;
-                    }
+                    //else
+                    //{
+                    //    listRemovedWords.Add(index);
+                    //    listSecondText.RemoveAt(index);
+                    //    num = 0;
+                    //    break;
+                    //}
                 }
             }
-            //foreach(string wurd in listFirstText)
-            //{
-            //    Text1RichTextBox.Text += Environment.NewLine + wurd;
-            //}
+            foreach (string wurd in listFirstText)
+            {
+                Text1RichTextBox.Text += Environment.NewLine + wurd;
+            }
         }
+
+
 
         public string LCSBack(string text1, string text2)
         {
