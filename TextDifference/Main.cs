@@ -14,7 +14,45 @@ namespace TextDifference
 
     public partial class MainForm : Form
     {
+        public enum DiffSectionType
+        {
+            Copy,
+            Insert,
+            Delete
+        }
 
+        public struct DiffSection
+        {
+            private readonly DiffSectionType _Type;
+            private readonly int _Length;
+
+            public DiffSection(DiffSectionType type, int length)
+            {
+                _Type = type;
+                _Length = length;
+            }
+
+            public DiffSectionType Type
+            {
+                get
+                {
+                    return _Type;
+                }
+            }
+
+            public int Length
+            {
+                get
+                {
+                    return _Length;
+                }
+            }
+
+            public override string ToString()
+            {
+                return string.Format("{0} {1}", Type, Length);
+            }
+        }
 
         string firstText, secondText;
         int? selectFirst, selectLast;
@@ -36,14 +74,23 @@ namespace TextDifference
         private void LoadText1Button_Click(object sender, EventArgs e)
         {
             SelectFileFromDialog("1");
-            GetMissingWord();
+            //GetMissingWord();
             //HighlightText();
         }
 
         private void LoadText2Button_Click(object sender, EventArgs e)
         {
             SelectFileFromDialog("2");
-            GetMissingWord();
+            //GetMissingWord();
+            //var result = FindLongestCommonSubstring(Text1RichTextBox.Text, Text2RichTextBox.Text);
+
+            var result = Diff(
+    Text1RichTextBox.Text.ToCharArray(), 0, Text1RichTextBox.Text.Length,
+    Text2RichTextBox.Text.ToCharArray(), 0, Text2RichTextBox.Text.Length,
+    EqualityComparer<char>.Default);
+
+            //Text1RichTextBox.Text += Environment.NewLine + result.
+            //Text1RichTextBox.Text += Environment.NewLine + result.Success;
             //HighlightText();
             //MatchString(Text1RichTextBox.Text, Text2RichTextBox.Text);
             //Text1RichTextBox.Text += Environment.NewLine + LCSBack(Text1RichTextBox.Text, Text2RichTextBox.Text);
@@ -90,6 +137,60 @@ namespace TextDifference
             }
         }
 
+        private IEnumerable<DiffSection> Diff<T>(
+    IList<T> firstCollection, int firstStart, int firstEnd,
+    IList<T> secondCollection, int secondStart, int secondEnd,
+    IEqualityComparer<T> equalityComparer)
+        {
+            var lcs = FindLongestCommonSubstring(
+                firstCollection, firstStart, firstEnd,
+                secondCollection, secondStart, secondEnd,
+                equalityComparer);
+
+            if (lcs.Success)
+            {
+                // deal with the section before
+                var sectionsBefore = Diff(
+                    firstCollection, firstStart, lcs.PositionInFirstCollection,
+                    secondCollection, secondStart, lcs.PositionInSecondCollection,
+                    equalityComparer);
+                foreach (var section in sectionsBefore)
+                    yield return section;
+
+                // output the copy operation
+                yield return new DiffSection(
+                    DiffSectionType.Copy,
+                    lcs.Length);
+
+                // deal with the section after
+                var sectionsAfter = Diff(
+                    firstCollection, lcs.PositionInFirstCollection + lcs.Length, firstEnd,
+                    secondCollection, lcs.PositionInSecondCollection + lcs.Length, secondEnd,
+                    equalityComparer);
+                foreach (var section in sectionsAfter)
+                    yield return section;
+
+                yield break;
+            }
+
+            // if we get here, no LCS
+
+            if (firstStart < firstEnd)
+            {
+                // we got content from first collection --> deleted
+                yield return new DiffSection(
+                    DiffSectionType.Delete,
+                    firstEnd - firstStart);
+            }
+            if (secondStart < secondEnd)
+            {
+                // we got content from second collection --> inserted
+                yield return new DiffSection(
+                    DiffSectionType.Insert,
+                    secondEnd - secondStart);
+            }
+        }
+
         void CompareStrings(string text1, string text2)
         {
             int result = 0;
@@ -97,6 +198,143 @@ namespace TextDifference
             result = string.Compare(text1, text2);
 
 
+        }
+
+        public LongestCommonSubstringResult FindLongestCommonSubstring(
+    string firstText,
+    string secondText)
+        {
+            return FindLongestCommonSubstring(
+                firstText.ToCharArray(),
+                secondText.ToCharArray());
+        }
+
+        public LongestCommonSubstringResult FindLongestCommonSubstring<T>(
+            IList<T> firstCollection,
+            IList<T> secondCollection)
+        {
+            return FindLongestCommonSubstring(
+                firstCollection,
+                secondCollection,
+                EqualityComparer<T>.Default);
+        }
+
+        public LongestCommonSubstringResult FindLongestCommonSubstring<T>(
+    IList<T> firstCollection,
+    IList<T> secondCollection,
+    IEqualityComparer<T> equalityComparer)
+        {
+            // default result, if we can't find anything
+            var result = new LongestCommonSubstringResult();
+
+            for (int index1 = 0; index1 < firstCollection.Count; index1++)
+            {
+                for (int index2 = 0; index2 < secondCollection.Count; index2++)
+                {
+                    if (equalityComparer.Equals(
+                        firstCollection[index1],
+                        secondCollection[index2]))
+                    {
+                        int length = CountEqual(
+                            firstCollection, index1,
+                            secondCollection, index2,
+                            equalityComparer);
+
+                        // Is longer than what we already have --> record new LCS
+                        if (length > result.Length)
+                        {
+                            result = new LongestCommonSubstringResult(
+                                index1,
+                                index2,
+                                length);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int CountEqual<T>(
+            IList<T> firstCollection, int firstPosition,
+            IList<T> secondCollection, int secondPosition,
+            IEqualityComparer<T> equalityComparer)
+        {
+            int length = 0;
+            while (firstPosition < firstCollection.Count
+                && secondPosition < secondCollection.Count)
+            {
+                if (!equalityComparer.Equals(
+                    firstCollection[firstPosition],
+                    secondCollection[secondPosition]))
+                {
+                    break;
+                }
+
+                firstPosition++;
+                secondPosition++;
+                length++;
+            }
+            return length;
+        }
+
+        public LongestCommonSubstringResult FindLongestCommonSubstring<T>(
+    IList<T> firstCollection, int firstStart, int firstEnd,
+    IList<T> secondCollection, int secondStart, int secondEnd,
+    IEqualityComparer<T> equalityComparer)
+        {
+            // default result, if we can't find anything
+            var result = new LongestCommonSubstringResult();
+
+            for (int index1 = firstStart; index1 < firstEnd; index1++)
+            {
+                for (int index2 = secondStart; index2 < secondEnd; index2++)
+                {
+                    if (equalityComparer.Equals(
+                        firstCollection[index1],
+                        secondCollection[index2]))
+                    {
+                        int length = CountEqual(
+                            firstCollection, index1, firstEnd,
+                            secondCollection, index2, secondEnd,
+                            equalityComparer);
+
+                        // Is longer than what we already have --> record new LCS
+                        if (length > result.Length)
+                        {
+                            result = new LongestCommonSubstringResult(
+                                index1,
+                                index2,
+                                length);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int CountEqual<T>(
+            IList<T> firstCollection, int firstPosition, int firstEnd,
+            IList<T> secondCollection, int secondPosition, int secondEnd,
+            IEqualityComparer<T> equalityComparer)
+        {
+            int length = 0;
+            while (firstPosition < firstEnd
+                && secondPosition < secondEnd)
+            {
+                if (!equalityComparer.Equals(
+                    firstCollection[firstPosition],
+                    secondCollection[secondPosition]))
+                {
+                    break;
+                }
+
+                firstPosition++;
+                secondPosition++;
+                length++;
+            }
+            return length;
         }
 
         void GetMissingWord()
